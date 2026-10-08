@@ -3,6 +3,7 @@ Họ và tên: Phạm Văn Vinh
 MSSV: 202419018
 ************************/
 using System;
+using System.Net;
 
 public enum DeviceStatus
 {
@@ -19,7 +20,7 @@ public abstract class Device
     protected DeviceStatus Status;
 
     #region Constructor
-    public Device(string id, string name, int year, int price, DeviceStatus status)
+    public Device(string id, string name, int year, decimal price, DeviceStatus status)
     {
         if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("Mã thiết bị không được để trống");
@@ -58,7 +59,7 @@ public abstract class Device
         int yearsUsed = DateTime.Now.Year - PurchaseYear;
         return yearsUsed;
     }
-    #region 
+    #endregion
 
     #region Override method
     // Ghi đè ToString để trả về thông tin của thiết bị
@@ -87,7 +88,7 @@ public class Computer: Device, INetworkable
     
     #region  Constructor
     public Computer(string id, string name, int year, 
-                    int price, DeviceStatus status, float ram,
+                    decimal price, DeviceStatus status, float ram,
                     string cpu, bool hasGpu)
         : base(id, name, year, price, status)
     {
@@ -152,3 +153,93 @@ public class Computer: Device, INetworkable
     #endregion
 }
 
+public class Printer: Device
+{
+    protected string PrinterType;
+    protected int PrintedPages;
+    protected bool IsColorPrinter;
+
+    #region Constructor
+    public Printer(string id, string name, int year, decimal price,
+                    DeviceStatus status, string type, int printedPages, bool isColorPrinter)
+        : base(id, name, year, price, status)
+    {
+        if (string.IsNullOrWhiteSpace(type))
+            throw new ArgumentException("Loại máy in không được để trống");
+        if (printedPages < 0)
+            throw new ArgumentOutOfRangeException("Số trang đã in phải là số không âm");
+        PrinterType = type;
+        PrintedPages = printedPages;
+        IsColorPrinter = isColorPrinter;
+    }
+    #endregion
+
+    #region Override method
+    public override decimal CalculateAnnualMaintenanceCost()
+    {
+        decimal cost = 0.04m * PurchasePrice;
+        if (PrintedPages > 100000)
+            cost += 500000m;
+        if (IsColorPrinter == true)
+            cost += 300000m;
+        return cost;
+    }
+
+    public override string ToString()
+    {
+        string baseInfo = base.ToString();
+        string moreInfo = $"Loại máy in: {PrinterType}\nSố trang đã in: {PrintedPages}\n";
+        if (IsColorPrinter == true)
+            moreInfo += "Là máy in màu\n";
+        else
+            moreInfo += "Là máy in không màu\n";
+        return baseInfo + moreInfo;
+    }
+    #endregion
+}
+
+public class NetworkPrinter: Printer, INetworkable
+{
+    public string IpAddress { get; private set; }
+    public bool IsConnected{ get; private set; }
+
+    #region Constructor
+    public NetworkPrinter(string id, string name, int year, decimal price, 
+                        DeviceStatus status, string type, int printedPages, bool isColorPrinter)
+        : base(id, name, year, price, status, type, printedPages, isColorPrinter)
+    {
+        IpAddress = string.Empty;
+        IsConnected = false;
+    }
+    #endregion
+
+    #region Implement Interface
+    public void Connect(string ipAddress)
+    {
+        if (string.IsNullOrWhiteSpace(ipAddress))
+            throw new ArgumentException("Địa chỉ IP kết nối không được rỗng");
+        if (IsConnected == true)
+            throw new ArgumentException("Thiết bị đang kết nối với mạng khác, không thể kết nối thêm");
+        IsConnected = true;
+        IpAddress = ipAddress;
+    }
+
+    public void Disconnect()
+    {
+        IsConnected = false;
+        IpAddress = string.Empty;
+    }
+    #endregion  
+
+    #region Override method
+    public override string ToString()
+    {
+        string baseInfo = base.ToString();
+        if (IsConnected == false)
+            return baseInfo;
+        else
+            return baseInfo + $"Địa chỉ IP: {IpAddress}";
+    }
+    #endregion
+
+}
