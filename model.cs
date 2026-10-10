@@ -3,7 +3,6 @@ Họ và tên: Phạm Văn Vinh
 MSSV: 202419018
 ************************/
 using System;
-using System.Net;
 
 public enum DeviceStatus
 {
@@ -141,7 +140,7 @@ public class Computer: Device, INetworkable
         if (string.IsNullOrWhiteSpace(ipAddress))
             throw new ArgumentException("Địa chỉ IP kết nối không được rỗng");
         if (IsConnected == true)
-            throw new ArgumentException("Thiết bị đang kết nối với mạng khác, không thể kết nối thêm");
+            throw new InvalidOperationException("Thiết bị đang kết nối với mạng khác, không thể kết nối thêm");
         IsConnected = true;
         IpAddress = ipAddress;
     }
@@ -220,7 +219,7 @@ public class NetworkPrinter: Printer, INetworkable
         if (string.IsNullOrWhiteSpace(ipAddress))
             throw new ArgumentException("Địa chỉ IP kết nối không được rỗng");
         if (IsConnected == true)
-            throw new ArgumentException("Thiết bị đang kết nối với mạng khác, không thể kết nối thêm");
+            throw new InvalidOperationException("Thiết bị đang kết nối với mạng khác, không thể kết nối thêm");
         IsConnected = true;
         IpAddress = ipAddress;
     }
@@ -343,10 +342,22 @@ public class LabRoom
         List<Device> DeviceNeedMaintenance = new List<Device>();
         foreach (Device d in Devices)
         {
-            if (d.GetStatus() == DeviceStatus.UnderMaintenance || DateTime.Now.Year - d.CalculateYearsUsed() > 5)
+            if (d.GetStatus() == DeviceStatus.UnderMaintenance || d.CalculateYearsUsed() > 5)
                 DeviceNeedMaintenance.Add(d);
         }
         return DeviceNeedMaintenance;
+    }
+
+    public void DisplayDevicesList()
+    {   
+        Console.WriteLine($"== Danh sách thiết bị phòng {RoomId}");
+        if (Devices.Count() == 0)
+            Console.WriteLine("Phòng chưa có thiết bị nào");
+        foreach (var d in Devices)
+        {
+            Console.WriteLine(d);
+            Console.WriteLine(new string('-', 30));
+        }
     }
     #endregion
 
