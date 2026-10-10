@@ -53,8 +53,9 @@ public abstract class Device
     }
     #endregion
 
-    #region Protected method
-    protected int CalculateYearsUsed()
+    #region Additional method
+    //Tính số năm sử dụng
+    public int CalculateYearsUsed()
     {
         int yearsUsed = DateTime.Now.Year - PurchaseYear;
         return yearsUsed;
@@ -242,4 +243,120 @@ public class NetworkPrinter: Printer, INetworkable
     }
     #endregion
 
+}
+
+public class Projector: Device
+{
+    private int BrightnessLumens;
+    private int HoursUsed;
+
+    #region Constructor
+    public Projector(string id, string name, int year, decimal price,
+                    DeviceStatus status, int brightness, int hoursUsed)
+        : base(id, name, year, price, status)
+    {
+        if (brightness <= 0)
+            throw new ArgumentOutOfRangeException("Độ sáng phải dương");
+        if (hoursUsed < 0)
+            throw new ArgumentOutOfRangeException("Số giờ sử dụng không được âm");
+
+        BrightnessLumens = brightness;
+        HoursUsed = hoursUsed;
+    }
+
+    #endregion
+
+    #region Override method
+    public override decimal CalculateAnnualMaintenanceCost()
+    {
+        decimal cost = 0.03m * PurchasePrice;
+        if (HoursUsed > 3000)
+            cost += 1500000;
+        return cost;
+    }
+
+    public override string ToString()
+    {
+        string baseInfo = base.ToString();
+        string moreInfo = $"Độ sáng: {BrightnessLumens} Lumen\nSố giờ sử dụng: {HoursUsed}";
+        return baseInfo + moreInfo;
+    }
+    #endregion
+}
+
+public class LabRoom
+{
+    private string RoomId;
+    private string RoomName;
+    private int Capacity;
+    private List<Device> Devices;
+
+    #region Constructor
+    public LabRoom(string id, string name, int capacity)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            throw new ArgumentException("Mã phòng thí nghiệm không được để trống");
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Tên phòng thí nghiệm không được để trống");
+        if (capacity <= 0)
+            throw new ArgumentOutOfRangeException("Sức chứa phải dương");
+        RoomId = id;
+        RoomName = name;
+        Capacity = capacity;
+        Devices = new List<Device>();
+    }
+    #endregion
+
+    #region Public method
+    public void AddDevice(Device device)
+    {
+        if (device == null)
+            throw new ArgumentNullException("Không thể thêm thiêt bị NULL");
+        // Kiểm tra sự trùng lặp mã thiết bị
+        bool isDuplicate = Devices.Any(d => d.GetDeviceID().Equals(device.GetDeviceID(), StringComparison.OrdinalIgnoreCase));
+        if (isDuplicate)
+            throw new InvalidOperationException("Không thể thêm thiết bị đã tồn tại vào phòng");
+        if (Devices.Count >= Capacity)
+            throw new InvalidOperationException("Sức chứa của phòng đã đầy, không thể thêm");
+        Devices.Add(device);
+    }
+
+    public Device? FindDevice(string deviceId)
+    {
+        if (string.IsNullOrWhiteSpace(deviceId))
+            return null;
+        return Devices.Find(d => d.GetDeviceID().Equals(deviceId, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public bool RemoveDevice(string deviceId)
+    {
+        if (string.IsNullOrWhiteSpace(deviceId))
+            return false;
+        Device? DeviceToRemove = FindDevice(deviceId);
+        if (DeviceToRemove == null)
+            return false;
+        return Devices.Remove(DeviceToRemove);
+    }
+
+    public List<Device> GetDevicesRequiringMaintenance()
+    {
+        List<Device> DeviceNeedMaintenance = new List<Device>();
+        foreach (Device d in Devices)
+        {
+            if (d.GetStatus() == DeviceStatus.UnderMaintenance || DateTime.Now.Year - d.CalculateYearsUsed() > 5)
+                DeviceNeedMaintenance.Add(d);
+        }
+        return DeviceNeedMaintenance;
+    }
+    #endregion
+
+    #region Polymorphism method
+    public decimal CalculateAnnualMaintenanceCost()
+    {
+        decimal cost = 0.0m;
+        foreach(Device d in Devices)
+            cost += d.CalculateAnnualMaintenanceCost();
+        return cost;
+    }
+    #endregion
 }
