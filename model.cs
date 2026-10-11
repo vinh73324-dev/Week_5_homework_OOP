@@ -235,8 +235,9 @@ public class NetworkPrinter: Printer, INetworkable
     public override string ToString()
     {
         string baseInfo = base.ToString();
+        baseInfo += $"Hỗ trợ kết nối mạng\n";
         if (IsConnected == false)
-            return baseInfo;
+            return baseInfo + $"Hiện chưa kết nối mạng";
         else
             return baseInfo + $"Địa chỉ IP: {IpAddress}";
     }
@@ -350,7 +351,7 @@ public class LabRoom
 
     public void DisplayDevicesList()
     {   
-        Console.WriteLine($"== Danh sách thiết bị phòng {RoomId}");
+        Console.WriteLine($"== Danh sách thiết bị phòng {RoomId} ==");
         if (Devices.Count() == 0)
             Console.WriteLine("Phòng chưa có thiết bị nào");
         foreach (var d in Devices)
