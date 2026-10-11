@@ -54,8 +54,8 @@ class Program
         // 4. Tính tổng chi phí bảo trì dự kiến của mỗi phòng
         Console.WriteLine(new string('-', 30));
         Console.WriteLine("4. Tính tổng chi phí bảo trì dự kiến của mỗi phòng");
-        Console.Write("Chi phí bảo trì của phòng LR0001: " + $"{lr1.CalculateAnnualMaintenanceCost()}");
-        Console.Write("Chi phí bảo trì của phòng LR0002: " + $"{lr2.CalculateAnnualMaintenanceCost()}");
+        Console.WriteLine("Chi phí bảo trì của phòng LR0001: " + $"{lr1.CalculateAnnualMaintenanceCost()}");
+        Console.WriteLine("Chi phí bảo trì của phòng LR0002: " + $"{lr2.CalculateAnnualMaintenanceCost()}");
         
 
         // 5. Liệt kê thiết bị cần bảo trì
