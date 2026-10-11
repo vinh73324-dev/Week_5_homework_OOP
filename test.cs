@@ -4,12 +4,12 @@ MSSV: 202419018
 ************************/
 using System;
 using System.Runtime.Versioning;
-namespace System;
+
 class Program
 {
     static void Main(string[] args)
     {
-        Console.OutputEncoding = Text.Encoding.UTF8;
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
         // Khởi tạo các đổi tượng
         Computer comp1 = new Computer("CPT001","Máy trạm thực hành", 2024, 24500000m, DeviceStatus.Active, 16.0f, "Intel Core i7-13620", false);
         Computer comp2 = new Computer("CPT002", "Máy trạm đồ họa", 2022, 25000000m, DeviceStatus.Active, 32.0f, "AMD Ryzen 7 5800X", true);
