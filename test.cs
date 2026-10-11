@@ -29,7 +29,6 @@ class Program
         lr1.AddDevice(comp2);
         lr1.AddDevice(prt2);
         lr1.AddDevice(prj1);
-        lr1.DisplayDevicesList();
 
         lr2.AddDevice(prt1);
 
