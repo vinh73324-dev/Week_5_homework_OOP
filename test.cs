@@ -63,16 +63,16 @@ class Program
         Console.WriteLine("5. Liệt kê thiết bị cần bảo trì");
         Console.WriteLine("Các thiết bị cần bảo trì phòng LR001:");
         List<Device> lr1MaintenanceDevices = lr1.GetDevicesRequiringMaintenance();
-        foreach (var d in lr1MaintenanceDevices)
+        foreach (Device d in lr1MaintenanceDevices)
         {
-            Console.WriteLine($"    {d.GetDeviceID}");
+            Console.WriteLine($"    {d.GetDeviceID()}");
         }
 
         Console.WriteLine("Các thiết bị cần bảo trì phòng LR002:");
         List<Device> lr2MaintenanceDevices = lr2.GetDevicesRequiringMaintenance();
         foreach (var d in lr2MaintenanceDevices)
         {
-            Console.WriteLine($"    {d.GetDeviceID}");
+            Console.WriteLine($"    {d.GetDeviceID()}");
         }        
 
 
